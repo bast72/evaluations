@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur d'Évaluations — Histoire & Géographie</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@300;400;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink:        #1a1a2e;
+  --parchment:  #f5f0e8;
+  --aged:       #e8dfc8;
+  --terracotta: #c0392b;
+  --gold:       #b8860b;
+  --faded:      #7a6e5f;
+  --white:      #fefcf8;
+  --shadow:     rgba(26,26,46,0.12);
+  --green:      #1a6b3c;
+  --blue:       #1a3a6b;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--parchment);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+header {
+  background: var(--ink);
+  color: var(--parchment);
+  padding: 1.8rem 2.5rem 1.5rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.4rem;
+  border-bottom: 4px solid var(--gold);
+}
+.header-icon { font-size: 2.6rem; line-height: 1; }
+.header-text h1 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.1; }
+.header-text p  { font-size: 0.82rem; color: var(--aged); font-weight: 300; margin-top: 0.25rem; letter-spacing: 0.04em; text-transform: uppercase; }
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.8rem 4rem;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.8rem;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  main { grid-template-columns: 1fr; }
+  header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}
+
+.card { background: var(--white); border: 1px solid var(--aged); border-radius: 3px; padding: 1.6rem; box-shadow: 0 2px 10px var(--shadow); margin-bottom: 1.4rem; }
+.card:last-child { margin-bottom: 0; }
+.card-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); margin-bottom: 1.1rem; padding-bottom: 0.65rem; border-bottom: 2px solid var(--aged); display: flex; align-items: center; gap: 0.5rem; }
+.card-title .num { font-family: 'DM Mono', monospace; font-size: 0.68rem; background: var(--terracotta); color: white; padding: 0.12rem 0.42rem; border-radius: 2px; font-weight: 500; letter-spacing: 0.05em; }
+.card-title .num.blue  { background: var(--blue); }
+.card-title .num.green { background: var(--green); }
+
+.field-label { display: block; font-size: 0.77rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--faded); margin-bottom: 0.35rem; margin-top: 0.9rem; }
+.field-label:first-child { margin-top: 0; }
+
+select, input[type="text"], input[type="number"], input[type="url"] {
+  width: 100%; background: var(--parchment); border: 1.5px solid var(--aged); border-radius: 2px;
+  padding: 0.55rem 0.75rem; font-family: 'Source Sans 3', sans-serif; font-size: 0.92rem; color: var(--ink);
+  transition: border-color 0.2s; appearance: none; -webkit-appearance: none;
+}
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M0 0l6 7 6-7z' fill='%237a6e5f'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.85rem center; padding-right: 2rem; }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--terracotta); }
+textarea { width: 100%; background: var(--parchment); border: 1.5px solid var(--aged); border-radius: 2px; padding: 0.7rem 0.9rem; font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; color: var(--ink); resize: vertical; line-height: 1.55; transition: border-color 0.2s; }
+textarea:focus { outline: none; border-color: var(--terracotta); }
+.hint { font-size: 0.75rem; color: var(--faded); margin-top: 0.28rem; font-style: italic; }
+
+.checkbox-group { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.1rem; }
+.checkbox-group label { text-transform: none; letter-spacing: 0; font-size: 0.85rem; font-weight: 400; color: var(--ink); margin: 0; display: flex; align-items: center; gap: 0.38rem; cursor: pointer; background: var(--parchment); border: 1.5px solid var(--aged); padding: 0.3rem 0.65rem; border-radius: 2px; transition: all 0.15s; user-select: none; }
+.checkbox-group input[type="checkbox"] { width: auto; accent-color: var(--terracotta); cursor: pointer; }
+.checkbox-group label:has(input:checked) { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+
+.tabs { display: flex; border-bottom: 2px solid var(--aged); margin-bottom: 1.1rem; }
+.tab-btn { padding: 0.45rem 0.95rem; font-family: 'Source Sans 3', sans-serif; font-size: 0.8rem; font-weight: 600; border: none; background: none; color: var(--faded); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; letter-spacing: 0.03em; }
+.tab-btn.active { color: var(--terracotta); border-bottom-color: var(--terracotta); }
+.tab-btn:hover:not(.active) { color: var(--ink); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.drop-zone { border: 2px dashed var(--aged); border-radius: 3px; padding: 1.8rem 1rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--parchment); position: relative; }
+.drop-zone:hover, .drop-zone.dragover { border-color: var(--terracotta); background: #fdf8f4; }
+.drop-zone input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; padding: 0; background: none; }
+.drop-zone .drop-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+.drop-zone .drop-text { font-size: 0.88rem; color: var(--faded); }
+.drop-zone .drop-text strong { color: var(--terracotta); }
+.drop-zone .drop-formats { font-size: 0.73rem; color: var(--faded); margin-top: 0.3rem; font-style: italic; }
+
+.docs-list { margin-top: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.doc-item { display: flex; align-items: flex-start; gap: 0.7rem; background: var(--parchment); border: 1px solid var(--aged); border-radius: 3px; padding: 0.6rem 0.75rem; }
+.doc-item.doc-file { border-left: 3px solid var(--green); }
+.doc-item.doc-text { border-left: 3px solid var(--faded); }
+.doc-item.doc-web  { border-left: 3px solid var(--blue); }
+.doc-item.doc-search { border-left: 3px solid var(--gold); }
+.doc-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.05rem; }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doc-meta { font-size: 0.73rem; color: var(--faded); margin-top: 0.1rem; }
+.doc-role-select { font-size: 0.75rem; padding: 0.18rem 0.5rem; border: 1px solid var(--aged); border-radius: 2px; background: white; color: var(--ink); cursor: pointer; margin-top: 0.3rem; width: auto; appearance: none; -webkit-appearance: none; }
+.doc-remove { background: none; border: none; color: var(--faded); cursor: pointer; font-size: 1rem; padding: 0.1rem; flex-shrink: 0; transition: color 0.15s; }
+.doc-remove:hover { color: var(--terracotta); }
+.doc-badge { font-family: 'DM Mono', monospace; font-size: 0.65rem; padding: 0.1rem 0.38rem; border-radius: 2px; display: inline-block; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.badge-file { background: #d4edda; color: var(--green); }
+.badge-web  { background: #dce8f5; color: var(--blue); }
+.badge-search { background: #fff3cd; color: #856404; }
+.badge-text { background: #f0ede8; color: var(--faded); }
+.docs-empty { text-align: center; padding: 1.2rem; color: var(--faded); font-size: 0.83rem; font-style: italic; }
+
+.web-search-row { display: flex; gap: 0.5rem; align-items: stretch; }
+.web-search-row input { flex: 1; }
+.search-results { margin-top: 0.7rem; display: flex; flex-direction: column; gap: 0.4rem; max-height: 280px; overflow-y: auto; }
+.search-result-item { background: var(--parchment); border: 1px solid var(--aged); border-radius: 3px; padding: 0.55rem 0.7rem; display: flex; gap: 0.7rem; align-items: flex-start; }
+.sri-content { flex: 1; min-width: 0; }
+.sri-title { font-size: 0.83rem; font-weight: 600; color: var(--blue); margin-bottom: 0.15rem; }
+.sri-url { font-size: 0.7rem; color: var(--faded); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sri-snippet { font-size: 0.78rem; color: var(--ink); margin-top: 0.2rem; line-height: 1.4; }
+.fetch-progress { font-size: 0.78rem; color: var(--faded); font-style: italic; padding: 0.4rem 0.6rem; background: var(--parchment); border-radius: 2px; border: 1px solid var(--aged); margin-top: 0.4rem; display: none; }
+.separator { height: 1px; background: var(--aged); margin: 1rem 0; }
+
+.btn-primary { width: 100%; margin-top: 1.3rem; padding: 0.85rem 1.4rem; background: var(--terracotta); color: white; border: none; border-radius: 2px; font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; cursor: pointer; transition: background 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 0.55rem; }
+.btn-primary:hover { background: #a93226; }
+.btn-primary:active { transform: scale(0.99); }
+.btn-primary:disabled { background: var(--faded); cursor: not-allowed; }
+.btn-sm { padding: 0.38rem 0.8rem; background: transparent; color: var(--ink); border: 1.5px solid var(--aged); border-radius: 2px; font-family: 'Source Sans 3', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
+.btn-sm:hover { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+.btn-sm.blue-btn { border-color: var(--blue); color: var(--blue); }
+.btn-sm.blue-btn:hover { background: var(--blue); color: white; }
+.btn-sm.green-btn { border-color: var(--green); color: var(--green); }
+.btn-sm.green-btn:hover { background: var(--green); color: white; }
+.btn-secondary { padding: 0.5rem 1rem; background: transparent; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 2px; font-family: 'Source Sans 3', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.4rem; }
+.btn-secondary:hover { background: var(--ink); color: var(--parchment); }
+
+.api-bar { background: var(--ink); color: var(--parchment); padding: 0.9rem 1.3rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.api-bar label { font-size: 0.75rem; color: var(--aged); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; flex-shrink: 0; }
+.api-bar input { flex: 1; min-width: 180px; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.2); color: var(--parchment); font-family: 'DM Mono', monospace; font-size: 0.82rem; padding: 0.4rem 0.75rem; border-radius: 2px; appearance: none; }
+.api-bar input::placeholder { color: rgba(255,255,255,0.3); }
+.api-bar input:focus { outline: none; border-color: var(--gold); }
+.api-note { font-size: 0.72rem; color: rgba(255,255,255,0.4); font-style: italic; }
+.btn-save-key { background: none; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); font-size: 0.75rem; padding: 0.3rem 0.75rem; border-radius: 2px; cursor: pointer; white-space: nowrap; }
+.btn-save-key:hover { background: rgba(255,255,255,0.1); color: white; }
+
+.result-section { grid-column: 1 / -1; }
+#result-container { display: none; }
+.result-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+.result-toolbar .card-title { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.toolbar-actions { display: flex; gap: 0.55rem; }
+
+#evaluation-output { background: var(--white); border: 1px solid var(--aged); border-radius: 3px; padding: 2.5rem 3rem; box-shadow: 0 2px 12px var(--shadow); font-size: 0.96rem; line-height: 1.75; }
+#evaluation-output h1, #evaluation-output h2, #evaluation-output h3 { font-family: 'Playfair Display', serif; color: var(--ink); }
+#evaluation-output h1 { font-size: 1.45rem; margin-bottom: 0.35rem; text-align: center; }
+#evaluation-output h2 { font-size: 1.1rem; margin: 1.5rem 0 0.55rem; color: var(--terracotta); border-bottom: 1px solid var(--aged); padding-bottom: 0.28rem; }
+#evaluation-output h3 { font-size: 0.97rem; margin: 0.9rem 0 0.25rem; color: var(--faded); font-weight: 600; }
+#evaluation-output p { margin-bottom: 0.55rem; }
+#evaluation-output ul, #evaluation-output ol { margin: 0.35rem 0 0.75rem 1.4rem; }
+#evaluation-output li { margin-bottom: 0.28rem; }
+#evaluation-output table { width: 100%; border-collapse: collapse; margin: 0.7rem 0; font-size: 0.88rem; }
+#evaluation-output table th, #evaluation-output table td { border: 1px solid var(--aged); padding: 0.45rem 0.75rem; text-align: left; }
+#evaluation-output table th { background: var(--ink); color: var(--parchment); font-weight: 600; }
+#evaluation-output table tr:nth-child(even) { background: var(--parchment); }
+
+.loader { display: none; flex-direction: column; align-items: center; gap: 0.9rem; padding: 2.5rem; color: var(--faded); font-style: italic; }
+.loader.active { display: flex; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--aged); border-top-color: var(--terracotta); border-radius: 50%; animation: spin 0.85s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-msg { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 3px; padding: 0.85rem 1.1rem; color: #991b1b; font-size: 0.87rem; margin-top: 0.9rem; display: none; }
+
+@media print {
+  header, .api-bar, .left-col, .result-toolbar .toolbar-actions, .loader { display: none !important; }
+  body { background: white; }
+  main { display: block; padding: 0; }
+  #evaluation-output { box-shadow: none; border: none; padding: 1rem; }
+  #result-container { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">📜</div>
+  <div class="header-text">
+    <h1>Générateur d'Évaluations</h1>
+    <p>Histoire &amp; Géographie · Niveau Collège · Alimenté par Claude</p>
+  </div>
+</header>
+
+<div class="api-bar">
+  <label>Clé API Anthropic</label>
+  <input type="password" id="api-key" placeholder="sk-ant-…" autocomplete="off">
+  <button class="btn-save-key" onclick="saveKey()">💾 Mémoriser</button>
+  <span class="api-note">🔒 Reste dans votre navigateur uniquement</span>
+</div>
+
+<main>
+
+<!-- COLONNE GAUCHE -->
+<div class="left-col">
+  <div class="card">
+    <div class="card-title"><span class="num">01</span> Paramètres</div>
+
+    <span class="field-label">Matière</span>
+    <select id="matiere">
+      <option value="histoire">Histoire</option>
+      <option value="géographie">Géographie</option>
+      <option value="histoire-géographie">Histoire-Géographie (mixte)</option>
+      <option value="EMC">EMC – Éducation Morale et Civique</option>
+    </select>
+
+    <span class="field-label">Niveau</span>
+    <select id="niveau">
+      <option value="6ème">6ème</option>
+      <option value="5ème">5ème</option>
+      <option value="4ème" selected>4ème</option>
+      <option value="3ème">3ème</option>
+    </select>
+
+    <span class="field-label">Titre du chapitre</span>
+    <input type="text" id="titre" placeholder="Ex. : La Première Guerre mondiale">
+
+    <span class="field-label">Durée</span>
+    <select id="duree">
+      <option value="30 minutes">30 minutes</option>
+      <option value="45 minutes" selected>45 minutes</option>
+      <option value="1 heure">1 heure</option>
+    </select>
+
+    <span class="field-label">Barème (points)</span>
+    <input type="number" id="points" value="20" min="5" max="40">
+
+    <span class="field-label">Types d'exercices</span>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="QCM" checked> QCM</label>
+      <label><input type="checkbox" value="Vrai/Faux"> Vrai / Faux</label>
+      <label><input type="checkbox" value="Questions de cours" checked> Questions de cours</label>
+      <label><input type="checkbox" value="Texte lacunaire"> Texte lacunaire</label>
+      <label><input type="checkbox" value="Relier / Associer"> Relier</label>
+      <label><input type="checkbox" value="Chronologie"> Chronologie</label>
+      <label><input type="checkbox" value="Analyse de document" checked> Analyse de doc</label>
+      <label><input type="checkbox" value="Paragraphe argumenté"> Paragraphe</label>
+    </div>
+
+    <span class="field-label">Difficulté</span>
+    <select id="difficulte">
+      <option value="facile">Facile — révision basique</option>
+      <option value="standard" selected>Standard — programme classique</option>
+      <option value="exigeant">Exigeant — brevet-level</option>
+    </select>
+
+    <span class="field-label">Instructions particulières <em style="font-weight:300">(optionnel)</em></span>
+    <textarea id="instructions" rows="3" placeholder="Ex. : Insister sur les dates, inclure une carte…"></textarea>
+  </div>
+</div>
+
+<!-- COLONNE DROITE -->
+<div class="right-col">
+
+  <div class="card">
+    <div class="card-title"><span class="num blue">02</span> Sources de l'évaluation</div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('texte', this)">✏️ Texte</button>
+      <button class="tab-btn" onclick="switchTab('fichier', this)">📎 Fichier</button>
+      <button class="tab-btn" onclick="switchTab('web', this)">🌐 Web</button>
+    </div>
+
+    <!-- TEXTE -->
+    <div class="tab-panel active" id="tab-texte">
+      <textarea id="lecon" rows="8" placeholder="Collez ici le texte intégral de la leçon, un résumé, une fiche de révision…"></textarea>
+      <p class="hint">Cours, résumé, fiche de révision…</p>
+      <textarea id="feuille-route" rows="4" style="margin-top:0.7rem" placeholder="Feuille de route / compétences visées (optionnel)"></textarea>
+      <button class="btn-sm green-btn" style="margin-top:0.6rem" onclick="addTextSource()">＋ Ajouter ce texte</button>
+    </div>
+
+    <!-- FICHIER -->
+    <div class="tab-panel" id="tab-fichier">
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" id="file-input" accept=".pdf,.txt,.md,image/*" multiple onchange="handleFiles(this.files)">
+        <div class="drop-icon">📁</div>
+        <div class="drop-text">Glissez vos fichiers ici ou <strong>cliquez pour parcourir</strong></div>
+        <div class="drop-formats">PDF · TXT · MD · Images (JPG, PNG)</div>
+      </div>
+      <p class="hint" style="margin-top:0.5rem">Les PDF et images sont lus par l'IA (vision). Les fichiers texte sont extraits localement.</p>
+    </div>
+
+    <!-- WEB -->
+    <div class="tab-panel" id="tab-web">
+      <p style="font-size:0.85rem;color:var(--ink);margin-bottom:0.6rem">Recherchez des documents pédagogiques (cartes, textes historiques, images…) et ajoutez-les à l'évaluation.</p>
+      <span class="field-label">Rechercher sur le web</span>
+      <div class="web-search-row">
+        <input type="text" id="web-query" placeholder="Ex. : carte Verdun 1916, affiche propagande…" onkeydown="if(event.key==='Enter')searchWeb()">
+        <button class="btn-sm blue-btn" onclick="searchWeb()" id="btn-search-web">🔍 Chercher</button>
+      </div>
+      <div class="fetch-progress" id="search-progress">Recherche en cours…</div>
+      <div class="search-results" id="search-results"></div>
+      <div class="separator"></div>
+      <span class="field-label">Ou entrer une URL directement</span>
+      <div class="web-search-row">
+        <input type="url" id="direct-url" placeholder="https://…">
+        <button class="btn-sm blue-btn" onclick="addDirectUrl()">＋ Ajouter</button>
+      </div>
+    </div>
+
+    <!-- DOCS AJOUTÉS -->
+    <div style="margin-top:1.1rem">
+      <div style="font-size:0.77rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--faded);margin-bottom:0.5rem">
+        Documents ajoutés <span id="docs-count" style="background:var(--terracotta);color:white;padding:0.08rem 0.4rem;border-radius:10px;font-size:0.65rem;margin-left:0.3rem">0</span>
+      </div>
+      <div class="docs-list" id="docs-list">
+        <div class="docs-empty">Aucun document — ajoutez du texte, un fichier ou une ressource web.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="num">03</span> Générer</div>
+    <p style="font-size:0.85rem;color:var(--faded)">L'IA va créer une évaluation complète à partir de vos paramètres et documents.</p>
+    <button class="btn-primary" id="btn-generate" onclick="generateEvaluation()">✦ Générer l'évaluation</button>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+</div>
+
+<!-- RÉSULTAT -->
+<div class="result-section" id="result-container">
+  <div class="result-toolbar">
+    <div class="card-title" style="margin:0;padding:0;border:none"><span class="num">04</span> Évaluation générée</div>
+    <div class="toolbar-actions">
+      <button class="btn-secondary" onclick="window.print()">🖨️ Imprimer / PDF</button>
+      <button class="btn-secondary" onclick="copyEval(this)">📋 Copier</button>
+      <button class="btn-secondary" onclick="regenerate()">↻ Régénérer</button>
+    </div>
+  </div>
+  <div class="loader" id="loader"><div class="spinner"></div><span id="loader-text">Génération en cours…</span></div>
+  <div id="evaluation-output"></div>
+</div>
+
+</main>
+
+<script>
+// ── ÉTAT ──────────────────────────────────────────
+const docs = [];
+let docIdSeq = 0;
+
+// ── CLÉ API ───────────────────────────────────────
+(function loadKey() {
+  const k = localStorage.getItem('anthropic-key');
+  if (k) document.getElementById('api-key').value = k;
+})();
+function saveKey() {
+  const k = document.getElementById('api-key').value.trim();
+  if (!k) { alert('Entrez d\'abord votre clé API.'); return; }
+  localStorage.setItem('anthropic-key', k);
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '✓ Mémorisée !';
+  setTimeout(() => btn.textContent = orig, 2000);
+}
+
+// ── ONGLETS ───────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── DRAG & DROP ───────────────────────────────────
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+
+// ── TEXTE ─────────────────────────────────────────
+function addTextSource() {
+  const lecon = document.getElementById('lecon').value.trim();
+  const fdr   = document.getElementById('feuille-route').value.trim();
+  if (!lecon && !fdr) { alert('Entrez du texte avant d\'ajouter.'); return; }
+  const content = (lecon ? '## Leçon\n' + lecon : '') + (fdr ? '\n\n## Feuille de route\n' + fdr : '');
+  const name = document.getElementById('titre').value.trim() || 'Leçon';
+  addDoc({ type: 'text', name: name + ' (texte)', content, role: 'lecon' });
+  document.getElementById('lecon').value = '';
+  document.getElementById('feuille-route').value = '';
+}
+
+// ── FICHIERS ──────────────────────────────────────
+async function handleFiles(files) {
+  for (const file of Array.from(files)) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    const isImage = file.type.startsWith('image/');
+    const isPDF   = file.type === 'application/pdf' || ext === 'pdf';
+    const isText  = ['txt','md','csv'].includes(ext) || file.type.startsWith('text/');
+    if (isImage || isPDF) {
+      const b64 = await toBase64(file);
+      addDoc({ type: 'file', name: file.name, base64: b64, mediaType: file.type || (isPDF ? 'application/pdf' : 'image/jpeg'), role: 'document', size: fmtSize(file.size) });
+    } else if (isText) {
+      const text = await file.text();
+      addDoc({ type: 'file', name: file.name, content: text, role: 'lecon', size: fmtSize(file.size) });
+    } else {
+      alert('Type non supporté : ' + file.name);
+    }
+  }
+}
+function toBase64(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
+}
+function fmtSize(b) { return b < 1048576 ? (b/1024).toFixed(0)+' Ko' : (b/1048576).toFixed(1)+' Mo'; }
+
+// ── RECHERCHE WEB ─────────────────────────────────
+async function searchWeb() {
+  const query  = document.getElementById('web-query').value.trim();
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!query)  return;
+  if (!apiKey) { showError('Entrez votre clé API pour rechercher sur le web.'); return; }
+  const btn  = document.getElementById('btn-search-web');
+  const prog = document.getElementById('search-progress');
+  const res  = document.getElementById('search-results');
+  btn.disabled = true; btn.textContent = '…';
+  prog.style.display = 'block'; prog.textContent = 'Recherche en cours…';
+  res.innerHTML = '';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6', max_tokens: 2000,
+        tools: [{ type:'web_search_20250305', name:'web_search' }],
+        messages: [{ role:'user', content:`Recherche des ressources pédagogiques pour histoire-géo collège sur : "${query}". Trouve 5 ressources (Eduscol, Lumni, Gallica, histoire-image.org, INSEE…). Réponds UNIQUEMENT en JSON : {"results":[{"title":"...","url":"...","snippet":"...","type":"image|texte|carte|données|article"}]}` }]
+      })
+    });
+    if (!r.ok) throw new Error('Erreur API ' + r.status);
+    const data = await r.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    let results = [];
+    try { const m = text.match(/\{[\s\S]*\}/); if (m) results = JSON.parse(m[0]).results||[]; } catch {}
+    prog.style.display = 'none';
+    if (!results.length) { res.innerHTML = '<p style="font-size:0.8rem;color:var(--faded);padding:0.5rem">Aucun résultat. Essayez d\'autres mots-clés.</p>'; return; }
+    window._searchResults = results;
+    results.forEach((r2, i) => {
+      const icon = {image:'🖼️',texte:'📄',carte:'🗺️',données:'📊',article:'📰'}[r2.type]||'🔗';
+      const el = document.createElement('div');
+      el.className = 'search-result-item';
+      el.innerHTML = `<div class="sri-content"><div class="sri-title">${icon} ${esc(r2.title)}</div><div class="sri-url">${esc(r2.url)}</div><div class="sri-snippet">${esc(r2.snippet)}</div></div><div><button class="btn-sm blue-btn" onclick="addWebResult(${i})">＋</button></div>`;
+      res.appendChild(el);
+    });
+  } catch(err) {
+    prog.style.display = 'none';
+    res.innerHTML = `<p style="font-size:0.8rem;color:var(--terracotta);padding:0.5rem">Erreur : ${esc(err.message)}</p>`;
+  } finally { btn.disabled = false; btn.textContent = '🔍 Chercher'; }
+}
+
+function addWebResult(idx) {
+  const r = window._searchResults[idx];
+  if (!r) return;
+  const icon = {image:'🖼️',texte:'📄',carte:'🗺️',données:'📊',article:'📰'}[r.type]||'🔗';
+  addDoc({ type:'search', name:r.title, url:r.url, snippet:r.snippet, docType:r.type, icon, role:'document' });
+}
+
+function addDirectUrl() {
+  const url = document.getElementById('direct-url').value.trim();
+  if (!url || !url.startsWith('http')) { alert('Entrez une URL valide.'); return; }
+  addDoc({ type:'web', name:url, url, role:'document' });
+  document.getElementById('direct-url').value = '';
+}
+
+// ── GESTION DOCUMENTS ─────────────────────────────
+function addDoc(doc) { doc.id = ++docIdSeq; docs.push(doc); renderDocs(); }
+function removeDoc(id) { const i = docs.findIndex(d=>d.id===id); if(i!==-1) docs.splice(i,1); renderDocs(); }
+function setRole(id, role) { const d = docs.find(d=>d.id===id); if(d) d.role=role; }
+
+function renderDocs() {
+  document.getElementById('docs-count').textContent = docs.length;
+  const list = document.getElementById('docs-list');
+  if (!docs.length) { list.innerHTML = '<div class="docs-empty">Aucun document — ajoutez du texte, un fichier ou une ressource web.</div>'; return; }
+  list.innerHTML = docs.map(doc => {
+    const icon  = doc.type==='web'?'🌐':doc.type==='search'?(doc.icon||'🔗'):doc.type==='file'&&doc.base64?(doc.mediaType?.startsWith('image')?'🖼️':'📄'):'✏️';
+    const badge = doc.type==='file'?'<span class="doc-badge badge-file">Fichier</span>':doc.type==='web'?'<span class="doc-badge badge-web">URL</span>':doc.type==='search'?'<span class="doc-badge badge-search">Web</span>':'<span class="doc-badge badge-text">Texte</span>';
+    const meta  = doc.size|||(doc.url?doc.url.slice(0,50)+(doc.url.length>50?'…':''):'');
+    return `<div class="doc-item doc-${doc.type}">
+      <div class="doc-icon">${icon}</div>
+      <div class="doc-info">
+        <div class="doc-name" title="${esc(doc.name)}">${esc(doc.name)}</div>
+        ${meta?`<div class="doc-meta">${esc(meta)}</div>`:''}
+        ${badge}
+        <select class="doc-role-select" onchange="setRole(${doc.id},this.value)">
+          <option value="lecon"    ${doc.role==='lecon'   ?'selected':''}>📚 Leçon / cours</option>
+          <option value="document" ${doc.role==='document'?'selected':''}>🔍 Document à analyser</option>
+          <option value="fdr"      ${doc.role==='fdr'     ?'selected':''}>🎯 Feuille de route</option>
+        </select>
+      </div>
+      <button class="doc-remove" onclick="removeDoc(${doc.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ── PROMPT ────────────────────────────────────────
+async function buildMessageContent() {
+  const content = [];
+  const leconParts=[], docParts=[], fdrParts=[];
+  for (const doc of docs) {
+    if (doc.type==='file' && doc.base64) {
+      const block = doc.mediaType==='application/pdf'
+        ? {type:'document',source:{type:'base64',media_type:'application/pdf',data:doc.base64}}
+        : {type:'image',source:{type:'base64',media_type:doc.mediaType,data:doc.base64}};
+      content.push(block);
+      content.push({type:'text',text:`[Fichier "${doc.name}" — rôle : ${doc.role==='document'?'document à analyser':doc.role==='fdr'?'feuille de route':'leçon'}]`});
+    } else if (doc.type==='web'||doc.type==='search') {
+      const entry = `URL [${doc.role==='document'?'DOCUMENT À ANALYSER':doc.role==='fdr'?'feuille de route':'leçon'}] : ${doc.url}${doc.snippet?'\nAperçu : '+doc.snippet:''}`;
+      (doc.role==='document'?docParts:doc.role==='fdr'?fdrParts:leconParts).push(entry);
+    } else if (doc.content) {
+      const entry = `--- ${doc.name} ---\n${doc.content}`;
+      (doc.role==='document'?docParts:doc.role==='fdr'?fdrParts:leconParts).push(entry);
+    }
+  }
+  const types = [...document.querySelectorAll('.checkbox-group input:checked')].map(cb=>cb.value);
+  const p = { matiere:document.getElementById('matiere').value, niveau:document.getElementById('niveau').value, titre:document.getElementById('titre').value.trim(), duree:document.getElementById('duree').value, points:document.getElementById('points').value, difficulte:document.getElementById('difficulte').value, instructions:document.getElementById('instructions').value.trim(), types };
+  let prompt = `Tu es un professeur de ${p.matiere} expérimenté au collège. Crée une évaluation complète prête à distribuer.
+
+PARAMÈTRES :
+- Matière : ${p.matiere} | Niveau : ${p.niveau} | Chapitre : ${p.titre||'voir leçon'}
+- Durée : ${p.duree} | Barème : ${p.points} points | Difficulté : ${p.difficulte}
+- Types d'exercices : ${types.join(', ')||'Questions de cours'}
+${p.instructions?'- Instructions : '+p.instructions:''}
+${leconParts.length?'\nLEÇON :\n'+leconParts.join('\n\n'):''}
+${fdrParts.length?'\nFEUILLE DE ROUTE :\n'+fdrParts.join('\n\n'):''}
+${docParts.length?'\nDOCUMENTS À ANALYSER (créer des questions dessus) :\n'+docParts.join('\n\n'):''}
+
+INSTRUCTIONS : Rédige UNIQUEMENT l'évaluation élève (pas de corrigé). En-tête : Nom/Prénom | Classe | Date | Durée | /total. Titres clairs avec points. Total = ${p.points} pts. QCM : 4 choix (a,b,c,d). Lacunaires : trous = …………… Vocabulaire adapté ${p.niveau}. Markdown propre, français.`;
+  content.push({type:'text',text:prompt});
+  return content;
+}
+
+// ── GÉNÉRATION ────────────────────────────────────
+async function generateEvaluation() {
+  const apiKey = document.getElementById('api-key').value.trim();
+  const errEl  = document.getElementById('error-msg');
+  errEl.style.display = 'none';
+  if (!apiKey) { showError('Entrez votre clé API Anthropic.'); return; }
+  if (!docs.length) { showError('Ajoutez au moins un document source.'); return; }
+  const types = [...document.querySelectorAll('.checkbox-group input:checked')];
+  if (!types.length) { showError('Sélectionnez au moins un type d\'exercice.'); return; }
+
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:0.4rem"></span> Génération…';
+
+  const rc=document.getElementById('result-container'), loader=document.getElementById('loader'), output=document.getElementById('evaluation-output');
+  rc.style.display='block'; loader.classList.add('active'); output.innerHTML='';
+  document.getElementById('loader-text').textContent='Génération en cours…';
+  rc.scrollIntoView({behavior:'smooth',block:'start'});
+
+  try {
+    const msgContent = await buildMessageContent();
+    const hasUrls = docs.some(d=>d.type==='web'||d.type==='search');
+    const body = { model:'claude-sonnet-4-6', max_tokens:4000, messages:[{role:'user',content:msgContent}] };
+    if (hasUrls) body.tools = [{type:'web_search_20250305',name:'web_search'}];
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify(body)
+    });
+    if (!resp.ok) { const e=await resp.json().catch(()=>({})); throw new Error(e.error?.message||'Erreur API '+resp.status); }
+    const data = await resp.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    loader.classList.remove('active');
+    output.innerHTML = parseMarkdown(text);
+  } catch(err) {
+    loader.classList.remove('active');
+    showError('Erreur : '+err.message);
+  } finally {
+    btn.disabled=false;
+    btn.innerHTML='✦ Générer l\'évaluation';
+  }
+}
+
+// ── MARKDOWN ──────────────────────────────────────
+function parseMarkdown(md) {
+  return md
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^---+$/gm,'<hr style="border:none;border-top:1px solid #e8dfc8;margin:1.5rem 0">')
+    .replace(/^\d+\. (.+)$/gm,'<li style="list-style:decimal">$1</li>')
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li[\s\S]*?<\/li>\n?)+/g,m=>{const o=m.includes('list-style:decimal');return o?`<ol style="margin:.4rem 0 .7rem 1.4rem">${m}</ol>`:`<ul style="margin:.4rem 0 .7rem 1.4rem">${m}</ul>`;})
+    .split(/\n{2,}/).map(b=>{b=b.trim();if(!b)return '';if(/^<(h[1-3]|ul|ol|hr|table)/.test(b))return b;if(b.includes('\n'))return '<p>'+b.replace(/\n/g,'<br>')+'</p>';return '<p>'+b+'</p>';}).join('\n');
+}
+
+// ── UTILS ─────────────────────────────────────────
+function showError(msg) { const el=document.getElementById('error-msg'); el.textContent=msg; el.style.display='block'; el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+function copyEval(btn) { navigator.clipboard.writeText(document.getElementById('evaluation-output').innerText).then(()=>{const o=btn.textContent;btn.textContent='✓ Copié !';setTimeout(()=>btn.textContent=o,2000);}); }
+function regenerate() { document.getElementById('evaluation-output').innerHTML=''; generateEvaluation(); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')generateEvaluation();});
+</script>
+</body>
+</html>
